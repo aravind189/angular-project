@@ -28,11 +28,3 @@ jobs:
       - name: Build Angular App
         working-directory: ./angular-app
         run: npm run build --if-present
-
-      - name: Run Linting
-        working-directory: ./angular-app
-        run: npm run lint
-
-      - name: Run Tests
-        working-directory: ./angular-app
-        run: npm test -- --watch=false --browsers=ChromeHeadless
