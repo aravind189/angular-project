@@ -1,0 +1,49 @@
+- name: Setup Docker and Deploy Angular App
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG Key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    - name: Add Docker Repository
+      shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start and Enable Docker Service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add current user to the Docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Pull Angular Docker Image
+      shell: docker pull aravind189/angular-app:latest
+
+    - name: Remove existing Angular container (if exists)
+      shell: docker rm -f angular-container || true
+
+    - name: Run Angular Docker Container
+      shell: docker run -d -p 80:80 --name angular-container aravind189/angular-app:latest
+
